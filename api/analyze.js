@@ -10,13 +10,18 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
+// Middleware para desabilitar HTTP/2 push e garantir headers corretos
+app.use((req, res, next) => {
+  res.setHeader('Connection', 'keep-alive');
+  next();
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
 function generateHTMLReport(patientName, analysisText) {
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -182,8 +187,7 @@ ${analysisText}
     </div>
   </div>
 </body>
-</html>
-  `;
+</html>`;
 }
 
 app.post('/api/analyze', async (req, res) => {
@@ -228,7 +232,8 @@ app.post('/api/analyze', async (req, res) => {
     const responseText = message.content[0].text;
     const htmlReport = generateHTMLReport(patientName || 'Paciente', responseText);
     
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200);
+    res.type('text/html; charset=utf-8');
     res.send(htmlReport);
   } catch (error) {
     console.error('Erro:', error);
