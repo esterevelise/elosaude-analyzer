@@ -171,15 +171,6 @@
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:disabled { background: #c0c0c0; cursor: not-allowed; transform: none; }
 
-    .btn-secondary {
-      background: var(--bg);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      margin-top: 0.75rem;
-    }
-
-    .btn-secondary:hover { background: var(--border); }
-
     .status {
       text-align: center;
       font-size: 13px;
@@ -203,44 +194,6 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .result-box {
-      margin-top: 1.5rem;
-      border: 1px solid var(--green);
-      border-radius: 10px;
-      overflow: hidden;
-      display: none;
-    }
-
-    .result-header {
-      background: var(--green-light);
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .result-header span { font-size: 13px; font-weight: 500; color: var(--green-dark); }
-
-    .result-header .badge {
-      font-size: 11px;
-      background: var(--green);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-weight: 500;
-    }
-
-    .result-body {
-      padding: 1rem;
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.7;
-      white-space: pre-wrap;
-      max-height: 360px;
-      overflow-y: auto;
-      background: var(--white);
-    }
 
     .error-box {
       margin-top: 1rem;
@@ -305,18 +258,6 @@
   </div>
 
   <div class="error-box" id="errorBox"></div>
-
-  <div class="result-box" id="resultBox">
-    <div class="result-header">
-      <span id="resultName">Resultado</span>
-      <span class="badge">Concluído</span>
-    </div>
-    <div class="result-body" id="resultBody"></div>
-  </div>
-
-  <button class="btn btn-secondary" id="copyBtn" onclick="copyResult()" style="display:none">
-    Copiar resultado
-  </button>
 </div>
 
 <footer>Powered by Claude AI · EloSaúde</footer>
@@ -349,8 +290,6 @@
     spinner.style.display = 'block';
     statusText.textContent = 'Analisando exame, aguarde...';
     errorBox.style.display = 'none';
-    document.getElementById('resultBox').style.display = 'none';
-    document.getElementById('copyBtn').style.display = 'none';
 
     try {
       const res = await fetch(API_URL, {
@@ -359,14 +298,16 @@
         body: JSON.stringify({ pdfBase64, patientName })
       });
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Erro ao processar o exame');
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Erro ao processar o exame');
       }
 
-      const htmlContent = await res.text();
+      // Decodificar HTML de base64
+      const htmlContent = atob(data.html);
       
-      // Abre o resultado em uma nova aba para impressão A4
+      // Abrir em nova aba
       const newWindow = window.open();
       newWindow.document.write(htmlContent);
       newWindow.document.close();
@@ -380,15 +321,6 @@
       btn.disabled = false;
       spinner.style.display = 'none';
     }
-  }
-
-  function copyResult() {
-    const text = document.getElementById('resultBody').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('copyBtn');
-      btn.textContent = 'Copiado!';
-      setTimeout(() => btn.textContent = 'Copiar resultado', 2000);
-    });
   }
 </script>
 

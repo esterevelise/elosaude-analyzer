@@ -10,12 +10,6 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
-// Middleware para desabilitar HTTP/2 push e garantir headers corretos
-app.use((req, res, next) => {
-  res.setHeader('Connection', 'keep-alive');
-  next();
-});
-
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -232,9 +226,15 @@ app.post('/api/analyze', async (req, res) => {
     const responseText = message.content[0].text;
     const htmlReport = generateHTMLReport(patientName || 'Paciente', responseText);
     
-    res.status(200);
-    res.type('text/html; charset=utf-8');
-    res.send(htmlReport);
+    // Codificar o HTML em base64 para enviar como JSON
+    const htmlBase64 = Buffer.from(htmlReport).toString('base64');
+    
+    res.json({
+      success: true,
+      html: htmlBase64,
+      patientName: patientName || 'Paciente',
+      analysisDate: new Date().toLocaleDateString('pt-BR')
+    });
   } catch (error) {
     console.error('Erro:', error);
     res.status(500).json({ error: error.message });
