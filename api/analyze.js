@@ -97,7 +97,7 @@ FORMATO DE RESPOSTA (JSON válido):
 }`;
 
   const message = await client.messages.create({
-    model: "claude-opus-4-20250805",
+    model: "claude-opus-4-20250514",
     max_tokens: 2000,
     system: systemPrompt,
     messages: [
