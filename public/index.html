@@ -259,6 +259,18 @@
   <div class="error-box" id="errorBox"></div>
 </div>
 
+<!-- Resultado aparece aqui na mesma página -->
+<div id="resultContainer" style="display:none; width:100%; max-width:860px; margin-top:2rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+    <span style="font-weight:600; color:var(--green);">✅ Análise concluída</span>
+    <div style="display:flex; gap:8px;">
+      <button onclick="printResult()" style="padding:8px 16px; background:var(--green); color:white; border:none; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px;">🖨️ Imprimir / Salvar PDF</button>
+      <button onclick="resetForm()" style="padding:8px 16px; background:white; color:var(--text-muted); border:1px solid var(--border); border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px;">↻ Novo exame</button>
+    </div>
+  </div>
+  <iframe id="resultFrame" style="width:100%; height:80vh; border:1px solid var(--border); border-radius:var(--radius); background:white;"></iframe>
+</div>
+
 <footer>Powered by Claude AI · EloSaúde</footer>
 
 <script>
@@ -304,11 +316,12 @@
       }
 
       const htmlContent = atob(data.html);
-      const newWindow = window.open();
-      newWindow.document.write(htmlContent);
-      newWindow.document.close();
+      const frame = document.getElementById('resultFrame');
+      frame.srcdoc = htmlContent;
+      document.getElementById('resultContainer').style.display = 'block';
+      document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+      statusText.textContent = '';
 
-      statusText.textContent = '✅ Análise concluída! Verifique a nova aba.';
     } catch (err) {
       errorBox.textContent = 'Erro: ' + err.message;
       errorBox.style.display = 'block';
@@ -317,6 +330,22 @@
       btn.disabled = false;
       spinner.style.display = 'none';
     }
+  }
+
+  function printResult() {
+    const frame = document.getElementById('resultFrame');
+    frame.contentWindow.print();
+  }
+
+  function resetForm() {
+    document.getElementById('resultContainer').style.display = 'none';
+    document.getElementById('patientName').value = '';
+    document.getElementById('uploadText').textContent = 'Clique para selecionar';
+    document.getElementById('uploadArea').classList.remove('selected');
+    document.getElementById('analyzeBtn').disabled = true;
+    document.getElementById('fileInput').value = '';
+    pdfBase64 = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
 
