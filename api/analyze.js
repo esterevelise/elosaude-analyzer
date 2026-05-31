@@ -8,6 +8,8 @@ import { readFileSync } from "fs";
 
 dotenv.config();
 
+// NÃO tentar ler a chave aqui - apenas no runtime quando for usar!
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
