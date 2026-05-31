@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Elo Saúde — Analisador de Exames</title>
+  <title>EloSaúde — Analisador de Exames</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -271,7 +271,7 @@
         <path d="M11 7h2v5h3l-4 5-4-5h3z"/>
       </svg>
     </div>
-    <span class="logo-name">Elo Saúde</span>
+    <span class="logo-name">EloSaúde</span>
   </div>
   <p>Análise inteligente de exames laboratoriais</p>
 </header>
@@ -319,10 +319,10 @@
   </button>
 </div>
 
-<footer>Powered by Claude AI · Elo Saúde</footer>
+<footer>Powered by Claude AI · EloSaúde</footer>
 
 <script>
-  const API_URL = 'https://elosaude-analyzer-production.up.railway.app/api/analyze';
+  const API_URL = '/api/analyze';
   let pdfBase64 = null;
 
   function handleFile(input) {
@@ -364,12 +364,14 @@
         throw new Error(err.error || 'Erro ao processar o exame');
       }
 
-      const data = await res.json();
-      document.getElementById('resultName').textContent = `${data.patientName} — ${data.analysisDate}`;
-      document.getElementById('resultBody').textContent = data.analysis;
-      document.getElementById('resultBox').style.display = 'block';
-      document.getElementById('copyBtn').style.display = 'flex';
-      statusText.textContent = '';
+      const htmlContent = await res.text();
+      
+      // Abre o resultado em uma nova aba para impressão A4
+      const newWindow = window.open();
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+      
+      statusText.textContent = '✅ Análise concluída! Verifique a nova aba.';
     } catch (err) {
       errorBox.textContent = 'Erro: ' + err.message;
       errorBox.style.display = 'block';
