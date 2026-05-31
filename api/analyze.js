@@ -29,7 +29,7 @@ app.post('/api/analyze', async (req, res) => {
     const client = new Anthropic({ apiKey });
 
     const message = await client.messages.create({
-      model: 'claude-opus-4-5',,
+      model: 'claude-opus-4-5',
       max_tokens: 2000,
       messages: [
         {
