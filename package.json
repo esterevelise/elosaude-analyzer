@@ -1,22 +1,17 @@
 {
   "name": "elosaude-analyzer",
   "version": "1.0.0",
-  "description": "EloSaúde Lab Analysis Platform",
-  "main": "api/analyze.js",
   "type": "module",
+  "main": "api/analyze.js",
   "scripts": {
-    "dev": "node api/analyze.js",
-    "start": "node api/analyze.js"
+    "start": "node api/analyze.js",
+    "dev": "node api/analyze.js"
   },
   "dependencies": {
-    "anthropic": "^0.27.0",
+    "@anthropic-ai/sdk": "^0.24.3",
     "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "pdf-parse": "^1.1.1",
-    "html2pdf": "^0.10.1"
+    "cors": "^2.8.5"
   },
-  "devDependencies": {},
   "engines": {
     "node": "18.x"
   }
