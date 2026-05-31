@@ -226,7 +226,7 @@ app.post('/api/analyze', async (req, res) => {
     });
 
     const responseText = message.content[0].text;
-    const htmlReport = generateHTMLReport(patientName, responseText);
+    const htmlReport = generateHTMLReport(patientName || 'Paciente', responseText);
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(htmlReport);
