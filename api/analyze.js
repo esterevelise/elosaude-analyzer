@@ -8,13 +8,12 @@ import { readFileSync } from "fs";
 
 dotenv.config();
 
+// NÃO tentar ler a chave aqui - apenas no runtime quando for usar!
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
@@ -71,6 +70,11 @@ function classifyResult(value, idealRange) {
 }
 
 async function analyzeExam(pdfBase64, patientName = "Paciente") {
+  // Criar cliente AQUI dentro da função, não no global
+  const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  });
+
   const systemPrompt = `Você é Claude, assistente de análise laboratorial da EloSaúde.
 
 PROTOCOLO OBRIGATÓRIO:
