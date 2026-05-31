@@ -1,11 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import express from 'express';
 import cors from 'cors';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import fs from 'fs';
 
 const app = express();
 
@@ -13,14 +9,15 @@ app.use(cors({
   origin: '*'
 }));
 app.use(express.json({ limit: '50mb' }));
-app.use(express.static(join(__dirname, '../public')));
+app.use(express.static('public'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, '../public/index.html'));
+  const html = fs.readFileSync('./public/index.html', 'utf8');
+  res.send(html);
 });
 
 function generateHTMLReport(patientName, analysisText) {
