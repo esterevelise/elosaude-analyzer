@@ -304,10 +304,7 @@
         throw new Error(data.error || 'Erro ao processar o exame');
       }
 
-      // Decodificar HTML de base64
       const htmlContent = atob(data.html);
-      
-      // Abrir em nova aba
       const newWindow = window.open();
       newWindow.document.write(htmlContent);
       newWindow.document.close();
