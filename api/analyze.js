@@ -14,6 +14,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(new URL('./public/index.html', import.meta.url).pathname);
+});
+
 function generateHTMLReport(patientName, analysisText) {
   return `<!DOCTYPE html>
 <html lang="pt-BR">
