@@ -268,12 +268,12 @@ function buildHTML(patientName, conteudo, dateToday) {
       </div>
       <div class="rh-info">
         <div class="rh-title">Relatorio de Analise Laboratorial</div>
-        <div class="rh-meta">Profissional: Eloise Mari Mendes · COREN/PR 740225<br>Especialidade: Medicina Funcional e Integrativa<br>Emitido em: ${dateToday}</div>
+        <div class="rh-meta">Profissional: Eloise Mari Mendes - COREN/PR 740225<br>Especialidade: Medicina Funcional e Integrativa<br>Emitido em: ${dateToday}</div>
       </div>
     </div>
     ${conteudo}
     <div class="rf">
-      <div class="rf-l">Eloise Mari Mendes<br>COREN/PR 740225 · Medicina Funcional e Integrativa<br>EloSaude — Cuidado e Conhecimento</div>
+      <div class="rf-l">Eloise Mari Mendes<br>COREN/PR 740225 - Medicina Funcional e Integrativa<br>EloSaude - Cuidado e Conhecimento</div>
       <div class="rf-r">Relatorio baseado em valores ideais funcionais proprietarios da EloSaude.<br>Nao substitui avaliacao clinica presencial.</div>
     </div>
   </div>
@@ -389,14 +389,18 @@ Retorne EXATAMENTE este HTML preenchido:
     </tr></thead>
     <tbody>
     [UMA LINHA POR EXAME — TODOS SEM EXCECAO — ORDENADOS POR CRITICIDADE]
-    <tr>
-      <td class="tm">NOME MARCADOR</td>
-      <td class="tv">VALOR UNIDADE</td>
-      <td class="tref">MIN</td>
-      <td class="tref">MAX</td>
-      <td><span class="badge b[c|a|l|n]"><span class="dot"></span>[Critico|Atencao|Limitrofe|Normal]</span></td>
-      <td class="tobs">OBSERVACAO CLINICA</td>
-    </tr>
+    
+    Para exame CRITICO use exatamente:
+    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bc"><span class="dot"></span>Critico</span></td><td class="tobs">OBSERVACAO</td></tr>
+    
+    Para exame ATENCAO use exatamente:
+    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge ba"><span class="dot"></span>Atencao</span></td><td class="tobs">OBSERVACAO</td></tr>
+    
+    Para exame LIMITROFE use exatamente:
+    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bl"><span class="dot"></span>Limitrofe</span></td><td class="tobs">OBSERVACAO</td></tr>
+    
+    Para exame NORMAL use exatamente:
+    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bn"><span class="dot"></span>Normal</span></td><td class="tobs">OBSERVACAO</td></tr>
     </tbody>
   </table>
 </div>
@@ -413,8 +417,9 @@ Retorne EXATAMENTE este HTML preenchido:
 REGRAS ABSOLUTAS:
 - TODOS os exames extraidos devem aparecer na tabela, sem excecao
 - Sem emojis, sem markdown
-- Use apenas caracteres ASCII simples — sem acentos corrompidos, sem simbolos especiais
-- Nos placeholders N_C, N_A, N_L, N_N coloque o numero zero — os valores reais serao calculados pelo servidor
+- Use apenas caracteres ASCII simples - sem acentos corrompidos, sem simbolos especiais
+- A PRIMEIRA LINHA do seu output deve ser exatamente: <!--COUNTS:C=X,A=Y,L=Z,N=W--> onde X,Y,Z,W sao os numeros reais que voce contou de criticos, atencao, limitrofe e normais
+- Depois dessa linha, continue com o HTML normalmente
 - Observacoes clinicas baseadas na tabela EloSaude`
         }]
       }]
@@ -423,12 +428,26 @@ REGRAS ABSOLUTAS:
     let inner = analyzeMsg.content[0].text
       .replace(/^```html\n?/, '').replace(/\n?```$/, '').trim();
 
-    // Contar badges reais no HTML gerado
-    const countBadge = (cls) => (inner.match(new RegExp(`class="badge ${cls}"`, 'g')) || []).length;
-    const nC = countBadge('bc');
-    const nA = countBadge('ba');
-    const nL = countBadge('bl');
-    const nN = countBadge('bn');
+    // Contar exames pelo tbody da tabela - metodo mais confiavel
+    let nC = 0, nA = 0, nL = 0, nN = 0;
+
+    // Extrair tbody da tabela principal de exames
+    const tbodyMatch = inner.match(/<tbody>([\s\S]*?)<\/tbody>/);
+    if (tbodyMatch) {
+      const tbody = tbodyMatch[1];
+      // Contar cada linha <tr> e verificar qual badge tem
+      const rows = tbody.match(/<tr[\s\S]*?<\/tr>/g) || [];
+      rows.forEach(row => {
+        if (row.includes('badge bc')) nC++;
+        else if (row.includes('badge ba')) nA++;
+        else if (row.includes('badge bl')) nL++;
+        else if (row.includes('badge bn')) nN++;
+      });
+    }
+
+    // Remover comentario de contagem se existir
+    inner = inner.replace(/<!--COUNTS:[^>]+-->\s*/, '');
+    console.log('Contagem por tbody - C:', nC, 'A:', nA, 'L:', nL, 'N:', nN, 'Total:', nC+nA+nL+nN);
 
     // Substituir placeholders pelos valores reais
     inner = inner
@@ -437,12 +456,13 @@ REGRAS ABSOLUTAS:
       .replace(/\bN_L\b/g, String(nL))
       .replace(/\bN_N\b/g, String(nN));
 
-    // Corrigir caracteres corrompidos comuns
-    inner = inner
-      .replace(/Â·/g, '·')
-      .replace(/Â°/g, '°')
-      .replace(/Â³/g, '³')
-      .replace(/Âµ/g, 'µ')
+    // Corrigir caracteres corrompidos (UTF-8 mal interpretado como latin-1)
+    const cleanEncoding = (str) => str
+      .replace(/Â·/g, ' - ')
+      .replace(/Â°/g, '')
+      .replace(/Â³/g, '3')
+      .replace(/Âµ/g, 'u')
+      .replace(/Â /g, ' ')
       .replace(/Ã©/g, 'e')
       .replace(/Ã£/g, 'a')
       .replace(/Ã§/g, 'c')
@@ -450,10 +470,16 @@ REGRAS ABSOLUTAS:
       .replace(/Ã­/g, 'i')
       .replace(/Ã³/g, 'o')
       .replace(/Ãº/g, 'u')
-      .replace(/Ã/g, 'A')
-      .replace(/â/g, '-')
+      .replace(/Ã¢/g, 'a')
+      .replace(/Ãª/g, 'e')
+      .replace(/Ãµ/g, 'o')
       .replace(/â/g, '-')
-      .replace(/â/g, '-');
+      .replace(/â/g, ' - ')
+      .replace(/â/g, "'")
+      .replace(/Â/g, '')
+      .replace(/Ã/g, '')
+      .replace(/â/g, '-');
+    inner = cleanEncoding(inner);
 
     const html = buildHTML(dados.paciente || patientName || 'Paciente', inner, today);
     const htmlBase64 = Buffer.from(html, 'utf8').toString('base64');
