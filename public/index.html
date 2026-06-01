@@ -3,180 +3,253 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EloSaúde — Analisador de Exames</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <title>EloSaúde — Análise de Exames</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --green: #1D9E75;
-      --green-light: #E1F5EE;
-      --green-dark: #0F6E56;
-      --text: #1a1a1a;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --bg: #f9fafb;
-      --white: #ffffff;
-      --radius: 12px;
-      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      --teal-50: #E0F7F4;
+      --teal-500: #00ACC1;
+      --teal-600: #00838F;
+      --teal-800: #006064;
+      --orange-50: #FFF4E6;
+      --orange-100: #FFE0B2;
+      --orange-500: #F57C00;
+      --orange-600: #E65100;
+      --neutral-50: #FAFAF9;
+      --neutral-100: #F5F4F1;
+      --neutral-200: #E8E7E3;
+      --neutral-400: #9E9D97;
+      --neutral-600: #5F5E5A;
+      --neutral-800: #2C2C2A;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
     }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: var(--font-body);
+      background: var(--neutral-100);
+      color: var(--neutral-800);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem;
+      padding: 2.5rem 1rem;
     }
 
+    /* HEADER */
     header {
       text-align: center;
       margin-bottom: 2.5rem;
     }
 
-    .logo {
+    .logo-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 0.75rem;
+      gap: 12px;
+      margin-bottom: 10px;
     }
 
     .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: var(--green);
-      border-radius: 10px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-800));
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 14px rgba(0,131,143,0.30);
     }
 
-    .logo-icon svg { width: 22px; height: 22px; fill: white; }
+    .logo-icon svg { width: 26px; height: 26px; }
 
     .logo-name {
-      font-family: 'DM Serif Display', serif;
-      font-size: 24px;
-      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
       letter-spacing: -0.3px;
     }
 
+    .logo-name .elo { color: var(--teal-600); }
+    .logo-name .saude { color: var(--orange-500); }
+
     header p {
-      font-size: 15px;
-      color: var(--text-muted);
+      font-size: 14px;
+      color: var(--neutral-400);
       font-weight: 300;
+      letter-spacing: 0.02em;
     }
 
+    /* CARD */
     .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2rem;
+      background: white;
+      border: 1px solid var(--neutral-200);
+      border-radius: 20px;
+      padding: 2.5rem;
       width: 100%;
-      max-width: 540px;
-      box-shadow: var(--shadow);
+      max-width: 520px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.04);
     }
 
-    .field { margin-bottom: 1.25rem; }
+    .field { margin-bottom: 1.5rem; }
 
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neutral-400);
+      margin-bottom: 8px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.08em;
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      color: var(--text);
-      background: var(--white);
+      padding: 11px 16px;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--neutral-800);
+      background: var(--neutral-50);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    input[type="text"]:focus { border-color: var(--green); }
-    input[type="text"]::placeholder { color: #c0c0c0; }
+    input[type="text"]:focus {
+      border-color: var(--teal-500);
+      box-shadow: 0 0 0 3px rgba(0,172,193,0.12);
+      background: white;
+    }
 
+    input[type="text"]::placeholder { color: var(--neutral-400); }
+
+    /* UPLOAD */
     .upload-area {
-      border: 2px dashed var(--border);
-      border-radius: 10px;
-      padding: 2.5rem 1rem;
+      border: 2px dashed var(--neutral-200);
+      border-radius: 14px;
+      padding: 2.5rem 1.5rem;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      background: var(--bg);
+      background: var(--neutral-50);
+      position: relative;
     }
 
-    .upload-area:hover { border-color: var(--green); background: var(--green-light); }
+    .upload-area:hover {
+      border-color: var(--teal-500);
+      background: var(--teal-50);
+    }
 
     .upload-area.selected {
-      border-color: var(--green);
-      background: var(--green-light);
+      border-color: var(--teal-500);
+      border-style: solid;
+      background: var(--teal-50);
     }
 
-    .upload-icon {
-      width: 44px;
-      height: 44px;
-      margin: 0 auto 12px;
-      background: var(--green-light);
+    .upload-icon-wrap {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 14px;
+      background: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,131,143,0.15);
+      transition: all 0.2s;
     }
 
-    .upload-area.selected .upload-icon { background: white; }
+    .upload-area:hover .upload-icon-wrap,
+    .upload-area.selected .upload-icon-wrap {
+      background: var(--teal-600);
+      box-shadow: 0 4px 14px rgba(0,131,143,0.30);
+    }
 
-    .upload-icon svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 1.8; }
+    .upload-icon-wrap svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--teal-600);
+      fill: none;
+      stroke-width: 2;
+      transition: stroke 0.2s;
+    }
 
-    .upload-area p { font-size: 14px; color: var(--text-muted); }
-    .upload-area p strong { color: var(--green); font-weight: 500; }
-    .upload-area small { font-size: 12px; color: #c0c0c0; display: block; margin-top: 4px; }
+    .upload-area:hover .upload-icon-wrap svg,
+    .upload-area.selected .upload-icon-wrap svg { stroke: white; }
 
-    .btn {
-      width: 100%;
-      padding: 13px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
+    .upload-title {
+      font-size: 14px;
       font-weight: 500;
-      border-radius: 10px;
-      cursor: pointer;
+      color: var(--teal-600);
+      margin-bottom: 4px;
+      transition: color 0.2s;
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--neutral-400);
+    }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 1.5rem 0;
+      color: var(--neutral-400);
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--neutral-200);
+    }
+
+    /* BTN */
+    .btn-analyze {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+      color: white;
       border: none;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 1.25rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 4px 14px rgba(245,124,0,0.25);
     }
 
-    .btn-primary {
-      background: var(--green);
-      color: white;
+    .btn-analyze:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245,124,0,0.35);
     }
 
-    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { background: #c0c0c0; cursor: not-allowed; transform: none; }
+    .btn-analyze:active:not(:disabled) { transform: translateY(0); }
 
+    .btn-analyze:disabled {
+      background: var(--neutral-200);
+      color: var(--neutral-400);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* STATUS */
     .status {
       text-align: center;
       font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 12px;
-      min-height: 18px;
+      color: var(--neutral-400);
+      margin-top: 14px;
+      min-height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -184,46 +257,124 @@
     }
 
     .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--green);
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--neutral-200);
+      border-top-color: var(--teal-600);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       display: none;
+      flex-shrink: 0;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ERROR */
     .error-box {
       margin-top: 1rem;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-left: 4px solid #EF4444;
+      border-radius: 10px;
       padding: 12px 16px;
       font-size: 13px;
-      color: #b91c1c;
+      color: #B91C1C;
       display: none;
     }
 
-    footer {
+    /* RESULT */
+    #resultContainer {
+      display: none;
+      width: 100%;
+      max-width: 900px;
       margin-top: 2rem;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .result-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--teal-600);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-actions { display: flex; gap: 8px; }
+
+    .btn-sm {
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-print {
+      background: var(--orange-500);
+      color: white;
+      box-shadow: 0 2px 8px rgba(245,124,0,0.25);
+    }
+    .btn-print:hover { background: var(--orange-600); }
+
+    .btn-reset {
+      background: white;
+      color: var(--neutral-600);
+      border: 1.5px solid var(--neutral-200) !important;
+    }
+    .btn-reset:hover { background: var(--neutral-50); }
+
+    #resultFrame {
+      width: 100%;
+      height: 82vh;
+      border: 1px solid var(--neutral-200);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 2.5rem;
       font-size: 12px;
-      color: #c0c0c0;
+      color: var(--neutral-400);
       text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    footer::before, footer::after {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--neutral-200);
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">
+  <div class="logo-wrap">
     <div class="logo-icon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 7h2v5h3l-4 5-4-5h3z"/>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4C8 4 5 7 5 11C5 13.5 6.5 15.5 8 17L9 20H15L16 17C17.5 15.5 19 13.5 19 11C19 7 16 4 12 4Z" fill="white" opacity="0.9"/>
+        <path d="M10 11H14M12 9V13" stroke="var(--teal-600)" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
-    <span class="logo-name">EloSaúde</span>
+    <div class="logo-name"><span class="elo">Elo</span><span class="saude">Saúde</span></div>
   </div>
   <p>Análise inteligente de exames laboratoriais</p>
 </header>
@@ -231,23 +382,25 @@
 <div class="card">
   <div class="field">
     <label>Nome do paciente</label>
-    <input type="text" id="patientName" placeholder="Ex: João Silva (opcional)" />
+    <input type="text" id="patientName" placeholder="Ex: Maria Silva (opcional)" />
   </div>
 
   <div class="field">
     <label>PDF do exame</label>
     <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-      <div class="upload-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 16V8m0 0l-3 3m3-3l3 3"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+      <div class="upload-icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 15V3m0 0L8 7m4-4l4 4"/><path d="M2 17l.621 2.485A2 2 0 004.561 21H19.44a2 2 0 001.94-1.515L22 17"/></svg>
       </div>
-      <p><strong id="uploadText">Clique para selecionar</strong></p>
-      <small>Somente arquivos .pdf</small>
+      <div class="upload-title" id="uploadText">Clique para selecionar</div>
+      <div class="upload-sub">Somente arquivos .pdf</div>
     </div>
     <input type="file" id="fileInput" accept=".pdf" style="display:none" onchange="handleFile(this)" />
   </div>
 
-  <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()" disabled>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>
+  <button class="btn-analyze" id="analyzeBtn" onclick="analyze()" disabled>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+    </svg>
     Analisar exame
   </button>
 
@@ -259,19 +412,21 @@
   <div class="error-box" id="errorBox"></div>
 </div>
 
-<!-- Resultado aparece aqui na mesma página -->
-<div id="resultContainer" style="display:none; width:100%; max-width:860px; margin-top:2rem;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-    <span style="font-weight:600; color:var(--green);">✅ Análise concluída</span>
-    <div style="display:flex; gap:8px;">
-      <button onclick="printResult()" style="padding:8px 16px; background:var(--green); color:white; border:none; border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px;">🖨️ Imprimir / Salvar PDF</button>
-      <button onclick="resetForm()" style="padding:8px 16px; background:white; color:var(--text-muted); border:1px solid var(--border); border-radius:8px; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px;">↻ Novo exame</button>
+<div id="resultContainer">
+  <div class="result-header">
+    <div class="result-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Análise concluída
+    </div>
+    <div class="result-actions">
+      <button class="btn-sm btn-print" onclick="printResult()">Imprimir / PDF</button>
+      <button class="btn-sm btn-reset" onclick="resetForm()">Novo exame</button>
     </div>
   </div>
-  <iframe id="resultFrame" style="width:100%; height:80vh; border:1px solid var(--border); border-radius:var(--radius); background:white;"></iframe>
+  <iframe id="resultFrame"></iframe>
 </div>
 
-<footer>Powered by Claude AI · EloSaúde</footer>
+<footer>Powered by Claude AI &nbsp;·&nbsp; EloSaúde</footer>
 
 <script>
   const API_URL = '/api/analyze';
@@ -321,20 +476,20 @@
       document.getElementById('resultContainer').style.display = 'block';
       document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
       statusText.textContent = '';
+      spinner.style.display = 'none';
 
     } catch (err) {
       errorBox.textContent = 'Erro: ' + err.message;
       errorBox.style.display = 'block';
       statusText.textContent = '';
+      spinner.style.display = 'none';
     } finally {
       btn.disabled = false;
-      spinner.style.display = 'none';
     }
   }
 
   function printResult() {
-    const frame = document.getElementById('resultFrame');
-    frame.contentWindow.print();
+    document.getElementById('resultFrame').contentWindow.print();
   }
 
   function resetForm() {
