@@ -411,9 +411,10 @@ Retorne EXATAMENTE este HTML preenchido:
 </div>
 
 REGRAS ABSOLUTAS:
-- TODOS os exames extraidos devem aparecer na tabela
-- Sem emojis, sem markdown, sem caracteres corrompidos
-- N_C, N_A, N_L, N_N = contagens reais
+- TODOS os exames extraidos devem aparecer na tabela, sem excecao
+- Sem emojis, sem markdown
+- Use apenas caracteres ASCII simples — sem acentos corrompidos, sem simbolos especiais
+- Nos placeholders N_C, N_A, N_L, N_N coloque o numero zero — os valores reais serao calculados pelo servidor
 - Observacoes clinicas baseadas na tabela EloSaude`
         }]
       }]
@@ -421,6 +422,38 @@ REGRAS ABSOLUTAS:
 
     let inner = analyzeMsg.content[0].text
       .replace(/^```html\n?/, '').replace(/\n?```$/, '').trim();
+
+    // Contar badges reais no HTML gerado
+    const countBadge = (cls) => (inner.match(new RegExp(`class="badge ${cls}"`, 'g')) || []).length;
+    const nC = countBadge('bc');
+    const nA = countBadge('ba');
+    const nL = countBadge('bl');
+    const nN = countBadge('bn');
+
+    // Substituir placeholders pelos valores reais
+    inner = inner
+      .replace(/\bN_C\b/g, String(nC))
+      .replace(/\bN_A\b/g, String(nA))
+      .replace(/\bN_L\b/g, String(nL))
+      .replace(/\bN_N\b/g, String(nN));
+
+    // Corrigir caracteres corrompidos comuns
+    inner = inner
+      .replace(/Â·/g, '·')
+      .replace(/Â°/g, '°')
+      .replace(/Â³/g, '³')
+      .replace(/Âµ/g, 'µ')
+      .replace(/Ã©/g, 'e')
+      .replace(/Ã£/g, 'a')
+      .replace(/Ã§/g, 'c')
+      .replace(/Ã¡/g, 'a')
+      .replace(/Ã­/g, 'i')
+      .replace(/Ã³/g, 'o')
+      .replace(/Ãº/g, 'u')
+      .replace(/Ã/g, 'A')
+      .replace(/â/g, '-')
+      .replace(/â/g, '-')
+      .replace(/â/g, '-');
 
     const html = buildHTML(dados.paciente || patientName || 'Paciente', inner, today);
     const htmlBase64 = Buffer.from(html, 'utf8').toString('base64');
