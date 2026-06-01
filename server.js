@@ -7,11 +7,48 @@ app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('public'));
 
-const VALORES_IDEAIS = `
-TABELA DE VALORES IDEAIS ELOSÁUDE — use SEMPRE esta tabela, NUNCA os valores do laboratório
+const SINONIMOS = `
+=== SINONIMOS E EQUIVALENCIAS (trate como o mesmo marcador) ===
+Eritrócitos = Hemácias = Glóbulos Vermelhos: 5.5 a 5.5 milhões/mm³
+AST = TGO = Aspartato Aminotransferase: 15 a 25 U/L
+ALT = TGP = Alanina Aminotransferase: 15 a 25 U/L
+GGT = Gama GT = Gama Glutamiltransferase: 0 a 16 U/L
+HbA1c = Hemoglobina Glicada = Glicohemoglobina: 0 a 5 %
+IGF-1 = Somatomedina C = Fator de Crescimento Insulínico: 200 a 300 ng/mL
+T3 Total = T3 Livre (quando não especificado): 3 a 3.4 pg/mL
+T4 Total = T4 Livre (quando não especificado): 0 a 1.4 ng/dL
+Glicemia = Glicose = Glicemia de Jejum: 75 a 90 mg/dL
+Ureia = BUN = Nitrogênio Ureico: 35 a 45 mg/dL
+HDL = HDL-Colesterol = Colesterol HDL: 60 a 93 mg/dL
+LDL = LDL-Colesterol = Colesterol LDL: 100 a 130 mg/dL
+VLDL = VLDL-Colesterol = Colesterol VLDL: 5 a 20 mg/dL
+CT = Colesterol Total = Colesterol: 0 a 240 mg/dL
+TG = Triglicérides = Triglicerideos = Triglicerídeos: 0 a 100 mg/dL
+PCR = Proteína C Reativa: 0 a 1 mg/L
+PCR-us = PCR Ultrassensível = Proteína C Reativa Ultrassensível: 0 a 0.5 mg/L
+FA = Fosfatase Alcalina: 0 a 80 U/L
+DHL = LDH = Desidrogenase Láctica: 60 a 160 U/L
+VHS = Velocidade de Hemossedimentação (não está na tabela — informar apenas o valor)
+TSH = Hormônio Tireoestimulante: 1 a 2.5 mUI/L
+Anti-TPO = ATPO = Anticorpo Antitireoperoxidase: 0 a 34 UI/mL
+Ác. Fólico = Folato = B9 = Vitamina B9: 12 a 17 ng/mL
+Cobalamina = B12 = Vitamina B12: 500 a 1200 pg/mL
+25-OH Vitamina D = 25OHD = Vitamina D = Calcidiol: 50 a 150 ng/mL
+PTHi = PTH = Paratormônio: 25 a 40 pg/mL
+Mg = Magnésio = Magnésio Sérico: 2 a 2.2 mg/dL
+Ca = Cálcio = Cálcio Sérico: 9.3 a 10.2 mg/dL
+Na = Sódio = Sódio Sérico: 0 a 140 mEq/L
+K = Potássio = Potássio Sérico: 0 a 4 mEq/L
+Zn = Zinco Sérico: 96 a 115 µg/dL
+Se = Selênio: 120 a 180 µg/L
+Fe = Ferro = Ferro Sérico: 70 a 120 µg/dL
+DHEA-S = DHEAS = DHEA Sulfato = DHEA: 200 a 300 µg/dL
+Cortisol Basal = Cortisol Sérico Acordar: 10 a 20 µg/dL
+`;
 
+const VALORES_IDEAIS = `
 === AVALIAÇÃO SANGUÍNEA ===
-Hemácias: 5.5 a 5.5 milhões/mm³
+Hemácias (Eritrócitos): 5.5 a 5.5 milhões/mm³
 Hemoglobina: 13.5 a 15.5 g/dL
 Hematócrito: 39 a 46 %
 VCM: 88 a 92 fL
@@ -261,23 +298,11 @@ function buildHTML(patientName, conteudo) {
   <title>Relatorio EloSaude - ${patientName}</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --orange-50:#FFF4E6;--orange-100:#FFE0B2;--orange-500:#F57C00;--orange-600:#E65100;
-      --teal-50:#E0F7F4;--teal-500:#00ACC1;--teal-600:#00838F;--teal-800:#006064;
-      --neutral-50:#FAFAF9;--neutral-100:#F5F4F1;--neutral-200:#E8E7E3;
-      --neutral-400:#9E9D97;--neutral-600:#5F5E5A;--neutral-800:#2C2C2A;
-      --success-bg:#EAF6EF;--success-text:#1B6B3A;
-      --warning-bg:#FFF8E1;--warning-text:#7A5C00;
-      --danger-bg:#FEECEB;--danger-text:#8B2020;
-      --limitrofe-bg:#FFFDE7;--limitrofe-text:#5D4037;
-      --font-display:'Playfair Display',Georgia,serif;
-      --font-body:'DM Sans',system-ui,sans-serif;
-    }
+    :root{--orange-50:#FFF4E6;--orange-100:#FFE0B2;--orange-500:#F57C00;--orange-600:#E65100;--teal-50:#E0F7F4;--teal-500:#00ACC1;--teal-600:#00838F;--teal-800:#006064;--neutral-50:#FAFAF9;--neutral-100:#F5F4F1;--neutral-200:#E8E7E3;--neutral-400:#9E9D97;--neutral-600:#5F5E5A;--neutral-800:#2C2C2A;--success-bg:#EAF6EF;--success-text:#1B6B3A;--warning-bg:#FFF8E1;--warning-text:#7A5C00;--danger-bg:#FEECEB;--danger-text:#8B2020;--limitrofe-bg:#FFFDE7;--limitrofe-text:#5D4037;--font-display:'Playfair Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;}
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:var(--font-body);background:var(--neutral-100);color:var(--neutral-800);font-size:14px;line-height:1.6;padding:24px;}
     .page{max-width:860px;margin:0 auto;background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden;}
     .header{background:linear-gradient(135deg,#00838F 0%,#006064 100%);padding:28px 40px;display:flex;justify-content:space-between;align-items:center;}
-    .header-logo{display:flex;align-items:center;gap:12px;}
     .logo-text{font-family:var(--font-display);font-size:28px;font-weight:700;}
     .logo-text .elo{color:white;}
     .logo-text .saude{color:var(--orange-100);}
@@ -326,11 +351,9 @@ function buildHTML(patientName, conteudo) {
   <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
   <div class="page">
     <div class="header">
-      <div class="header-logo">
-        <div>
-          <div class="logo-text"><span class="elo">Elo</span><span class="saude">Saude</span></div>
-          <div class="header-tagline">Cuidado e Conhecimento</div>
-        </div>
+      <div>
+        <div class="logo-text"><span class="elo">Elo</span><span class="saude">Saude</span></div>
+        <div class="header-tagline">Cuidado e Conhecimento</div>
       </div>
       <div class="header-right">
         <strong>Eloise Mari Mendes</strong>
@@ -372,23 +395,26 @@ app.post('/api/analyze', async (req, res) => {
             type: 'text',
             text: `Voce e o assistente especializado da EloSaude, consultorio de Medicina Funcional de Eloise Mari Mendes (COREN/PR 740225).
 
+${SINONIMOS}
+
 ${VALORES_IDEAIS}
 
 INSTRUCOES OBRIGATORIAS:
 1. Extraia TODOS os valores numericos do PDF
-2. Compare CADA valor com a tabela EloSaude acima — NUNCA use referencias do laboratorio
-3. Classifique conforme:
+2. Ao identificar cada marcador, verifique primeiro a tabela de SINONIMOS — nomes diferentes podem ser o mesmo exame
+3. Compare CADA valor com a tabela EloSaude acima — NUNCA use referencias do laboratorio
+4. Classifique conforme:
    - CRITICO: valor <= 70% do Min OU >= 130% do Max
-   - ATENCAO: valor entre 70-99% do Min OU 101-129% do Max  
+   - ATENCAO: valor entre 70-99% do Min OU 101-129% do Max
    - LIMITROFE: dentro do ideal mas nos 10% extremos do intervalo
    - NORMAL: dentro do intervalo ideal
-4. Retorne APENAS HTML puro — sem markdown, sem blocos de codigo, sem emojis
-5. Use portugues brasileiro correto, sem caracteres corrompidos
+5. Retorne APENAS HTML puro — sem markdown, sem blocos de codigo, sem emojis
+6. Use portugues brasileiro correto, sem caracteres corrompidos
 
 Paciente: ${patientName || 'Paciente'}
 Data de hoje: ${new Date().toLocaleDateString('pt-BR')}
 
-Retorne EXATAMENTE este HTML (substituindo os campos em maiusculo):
+Retorne EXATAMENTE este HTML preenchido:
 
 <div class="patient-bar">
   <div class="patient-field"><span class="patient-label">Paciente</span><span class="patient-value">NOME DO PACIENTE</span></div>
@@ -398,15 +424,15 @@ Retorne EXATAMENTE este HTML (substituindo os campos em maiusculo):
 </div>
 
 <div class="stats-row">
-  <div class="stat-box"><div class="stat-num" style="color:#8B2020">N</div><div class="stat-label">Criticos</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:#7A5C00">N</div><div class="stat-label">Atencao</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:#5D4037">N</div><div class="stat-label">Limitrofes</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:#1B6B3A">N</div><div class="stat-label">Normais</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#8B2020">N_CRITICOS</div><div class="stat-label">Criticos</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#7A5C00">N_ATENCAO</div><div class="stat-label">Atencao</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#5D4037">N_LIMITROFE</div><div class="stat-label">Limitrofes</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#1B6B3A">N_NORMAIS</div><div class="stat-label">Normais</div></div>
 </div>
 
 <div class="content">
 
-[Para cada grupo de exames, repita este bloco:]
+[Para cada grupo de exames encontrado no PDF:]
 <h2 class="section-title">NOME DO GRUPO</h2>
 <table>
   <thead><tr><th>Marcador</th><th>Resultado</th><th>Ref. EloSaude</th><th>Status</th></tr></thead>
@@ -420,12 +446,12 @@ Retorne EXATAMENTE este HTML (substituindo os campos em maiusculo):
   </tbody>
 </table>
 
-[Se houver alertas, adicione:]
+[Se houver alertas criticos ou de atencao:]
 <h2 class="section-title">Alertas Clinicos</h2>
 <div class="alert-box alert-[danger|warning]">
   <div>
     <div class="alert-title">MARCADOR — STATUS</div>
-    <div class="alert-body">INTERPRETACAO CLINICA DA TABELA ELOSÁUDE</div>
+    <div class="alert-body">INTERPRETACAO CLINICA</div>
   </div>
 </div>
 
