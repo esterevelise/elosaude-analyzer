@@ -344,81 +344,47 @@ DADOS EXTRAIDOS DO PDF:
 ${JSON.stringify(dados, null, 2)}
 
 INSTRUCOES OBRIGATORIAS:
-1. Compare CADA exame com a tabela EloSaude usando sinonimos para identificar o marcador
-2. Classifique todos os exames com precisao matematica
+1. Inclua NO RELATORIO APENAS os exames que existem no PDF do paciente
+   - NAO invente exames, NAO adicione exames com valor zero que nao estao no PDF
+   - NAO inclua Blastos, Promielocitos, Mielocitos, Metamielocitos e similares se nao tiverem valor real no PDF
+   - Inclua apenas exames com resultado numerico real coletado
+
+2. Compare CADA exame com a tabela EloSaude usando sinonimos
+   - NUNCA use referencias do laboratorio
+   - Classifique com precisao matematica:
+     * CRITICO: valor <= 70% do Min Ideal OU >= 130% do Max Ideal
+     * ATENCAO: valor entre 70-99% do Min OU 101-129% do Max
+     * LIMITROFE: dentro do ideal mas nos 10% extremos do intervalo
+     * NORMAL: dentro do intervalo ideal
+   - Se o exame nao estiver na tabela EloSaude, classifique como NORMAL e explique
+
 3. Ordene: CRITICOS primeiro, depois ATENCAO, LIMITROFE, NORMAL
-4. Gere ALERTAS CLINICOS AUTOMATICOS para correlacoes importantes como:
+
+4. Na linha do paciente use APENAS texto ASCII simples:
+   - Use " - " (hifen com espacos) em vez de ponto ou qualquer outro separador especial
+   - Exemplo: "Feminino - 47 anos - Coleta: 06/05/2026"
+
+5. Gere ALERTAS CLINICOS AUTOMATICOS para correlacoes importantes:
    - Vitamina D baixa + PTH alto = Hiperparatireoidismo Secundario
-   - Ferritina critica + Neutropenia + Linfopenia = Comprometimento Imunologico Multifatorial
+   - Ferritina critica + Neutropenia + Linfopenia = Comprometimento Imunologico
    - T3 baixo + TSH normal = Hipotireoidismo Periferico
    - Hemoglobina baixa + Ferritina baixa + RDW alto = Anemia Ferropriva
-   - Glicose alta + Insulina alta + HOMA-IR alto = Resistencia Insulinica
-5. Retorne APENAS HTML puro, sem markdown, sem emojis, sem caracteres corrompidos
-6. Use portugues brasileiro correto
+   - TSH alto + T4 baixo = Hipotireoidismo Primario
+   - FSH alto + LH alto = Transicao Menopausica
 
-Retorne EXATAMENTE este HTML preenchido:
-
-<div class="ps">
-  <div class="ps-name">NOME COMPLETO DO PACIENTE</div>
-  <div class="ps-sub">SEXO · IDADE anos · Coleta: DATA_COLETA</div>
-  <div class="ps-fields">
-    <div><div class="pf-label">Data do Exame</div><div class="pf-value">DATA</div></div>
-    <div><div class="pf-label">Medico Solicitante</div><div class="pf-value">MEDICO OU —</div></div>
-    <div><div class="pf-label">Laboratorio</div><div class="pf-value">LAB OU —</div></div>
-    <div><div class="pf-label">N Atendimento</div><div class="pf-value">NUM OU —</div></div>
-  </div>
-</div>
-
-<div class="ss">
-  <div class="sb"><div class="sb-num" style="color:var(--c-dot)">N_C</div><div class="sb-label"><span class="dot" style="background:var(--c-dot)"></span>CRITICO</div></div>
-  <div class="sb"><div class="sb-num" style="color:var(--a-dot)">N_A</div><div class="sb-label"><span class="dot" style="background:var(--a-dot)"></span>ATENCAO</div></div>
-  <div class="sb"><div class="sb-num" style="color:var(--l-dot)">N_L</div><div class="sb-label"><span class="dot" style="background:var(--l-dot)"></span>LIMITROFE</div></div>
-  <div class="sb"><div class="sb-num" style="color:var(--ok-dot)">N_N</div><div class="sb-label"><span class="dot" style="background:var(--ok-dot)"></span>NORMAL</div></div>
-</div>
-
-<div class="ts">
-  <div class="sh">Resultados — Classificacao por Criticidade</div>
-  <table>
-    <thead><tr>
-      <th style="width:22%">Marcador</th>
-      <th style="width:13%">Resultado</th>
-      <th style="width:8%">Min Ideal</th>
-      <th style="width:8%">Max Ideal</th>
-      <th style="width:11%">Criticidade</th>
-      <th>Observacao Clinica</th>
-    </tr></thead>
-    <tbody>
-    [UMA LINHA POR EXAME — TODOS SEM EXCECAO — ORDENADOS POR CRITICIDADE]
-    
-    Para exame CRITICO use exatamente:
-    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bc"><span class="dot"></span>Critico</span></td><td class="tobs">OBSERVACAO</td></tr>
-    
-    Para exame ATENCAO use exatamente:
-    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge ba"><span class="dot"></span>Atencao</span></td><td class="tobs">OBSERVACAO</td></tr>
-    
-    Para exame LIMITROFE use exatamente:
-    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bl"><span class="dot"></span>Limitrofe</span></td><td class="tobs">OBSERVACAO</td></tr>
-    
-    Para exame NORMAL use exatamente:
-    <tr><td class="tm">NOME</td><td class="tv">VALOR UNIDADE</td><td class="tref">MIN</td><td class="tref">MAX</td><td><span class="badge bn"><span class="dot"></span>Normal</span></td><td class="tobs">OBSERVACAO</td></tr>
-    </tbody>
-  </table>
-</div>
-
-[SEMPRE inclua alertas se houver criticos ou atencao:]
-<div class="als">
-  <div class="alh">Alertas Clinicos Automaticos</div>
-  <div class="ali ali-[c|a]">
-    <div class="ali-t">Alerta N — TITULO DO ALERTA</div>
-    <div class="ali-b">DESCRICAO DETALHADA COM VALORES E CORRELACOES CLINICAS</div>
-  </div>
-</div>
+6. Use APENAS caracteres ASCII simples em todo o HTML:
+   - Use " - " em vez de travessao, ponto ou simbolos especiais
+   - Sem acentos corrompidos, sem simbolos Unicode especiais
+   - Numeros com ponto decimal (nao virgula)
 
 REGRAS ABSOLUTAS:
-- TODOS os exames extraidos devem aparecer na tabela, sem excecao
+- Inclua SOMENTE os exames que existem no PDF com resultado numerico real — nenhum outro
+- Exames com valor 0 por default (Blastos, Promielocitos, Mielocitos, Metamielocitos, Linfocitos Atipicos, Pro-linfocitos) so aparecem se tiverem sido efetivamente realizados e reportados no PDF
 - Sem emojis, sem markdown
-- Use apenas caracteres ASCII simples - sem acentos corrompidos, sem simbolos especiais
-- A PRIMEIRA LINHA do seu output deve ser exatamente: <!--COUNTS:C=X,A=Y,L=Z,N=W--> onde X,Y,Z,W sao os numeros reais que voce contou de criticos, atencao, limitrofe e normais
+- Use APENAS caracteres ASCII — hifens simples (-) em vez de travessoes, sem acentos corrompidos
+- Na linha do paciente use: "SEXO - IDADE anos - Coleta: DATA" (hifen com espacos, sem pontos especiais)
+- Nos alertas use " - " (hifen com espacos) nunca travessao
+- A PRIMEIRA LINHA do seu output deve ser exatamente: <!--COUNTS:C=X,A=Y,L=Z,N=W--> onde X,Y,Z,W sao os numeros reais contados
 - Depois dessa linha, continue com o HTML normalmente
 - Observacoes clinicas baseadas na tabela EloSaude`
         }]
