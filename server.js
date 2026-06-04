@@ -291,7 +291,7 @@ app.post('/api/analyze', async (req, res) => {
 
     // ETAPA 1: Extrair TODOS os dados do PDF
     const extractMsg = await client.messages.create({
-      model: 'claude-opus-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 8000,
       messages: [{
         role: 'user',
